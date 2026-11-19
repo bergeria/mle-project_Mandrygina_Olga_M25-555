@@ -1,0 +1,9 @@
+{
+  "total_rows": 141215,
+  "train_rows": 113407,
+  "test_rows": 27808,
+  "train_buildings": 19671,
+  "test_buildings": 4918,
+  "overlapping_buildings": 0,
+  "test_fraction_rows": 0.19691959069503948
+}

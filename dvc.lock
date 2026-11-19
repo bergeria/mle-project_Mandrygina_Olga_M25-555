@@ -1,0 +1,206 @@
+schema: '2.0'
+stages:
+  extract:
+    cmd: python -m src.extract
+    deps:
+    - path: requirements-ml.lock.txt
+      hash: md5
+      md5: 2efe042763aeb0312a6e5b5ec173db7d
+      size: 2005
+    - path: src/__init__.py
+      hash: md5
+      md5: 4fc40cac24b72ccb8c93a18a3e83f292
+      size: 125
+    - path: src/common.py
+      hash: md5
+      md5: 5f802bacd0cec45cd76c77761bf116c5
+      size: 1899
+    - path: src/extract.py
+      hash: md5
+      md5: a47a98242b6c7c108549041b0bfc138a
+      size: 1868
+    params:
+      params.yaml:
+        data:
+          schema: public
+          table: flats_dataset_clean
+    outs:
+    - path: data/raw/flats_clean.csv
+      hash: md5
+      md5: 439dfc9930607db96e65216a93b3ff60
+      size: 18977382
+  split:
+    cmd: python -m src.split_data
+    deps:
+    - path: data/raw/flats_clean.csv
+      hash: md5
+      md5: 439dfc9930607db96e65216a93b3ff60
+      size: 18977382
+    - path: requirements-ml.lock.txt
+      hash: md5
+      md5: 2efe042763aeb0312a6e5b5ec173db7d
+      size: 2005
+    - path: src/__init__.py
+      hash: md5
+      md5: 4fc40cac24b72ccb8c93a18a3e83f292
+      size: 125
+    - path: src/common.py
+      hash: md5
+      md5: 5f802bacd0cec45cd76c77761bf116c5
+      size: 1899
+    - path: src/split_data.py
+      hash: md5
+      md5: f873b26cec5f6f02ed5f4c61766b6ffb
+      size: 1684
+    params:
+      params.yaml:
+        features:
+          numeric:
+          - floor
+          - is_apartment
+          - kitchen_area
+          - living_area
+          - rooms
+          - total_area
+          - build_year
+          - latitude
+          - longitude
+          - ceiling_height
+          - flats_count
+          - floors_total
+          - has_elevator
+          categorical:
+          - building_type_int
+        split:
+          test_size: 0.2
+          random_state: 42
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 3de20cd5d19cce4de2fac9941a75bc8d
+      size: 3728071
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 152c6533917179ecb8d340a9e8734b8f
+      size: 15249506
+    - path: reports/split.json
+      hash: md5
+      md5: bab05154ce62d127d90341bdde976ca3
+      size: 202
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 152c6533917179ecb8d340a9e8734b8f
+      size: 15249506
+    - path: requirements-ml.lock.txt
+      hash: md5
+      md5: 2efe042763aeb0312a6e5b5ec173db7d
+      size: 2005
+    - path: src/__init__.py
+      hash: md5
+      md5: 4fc40cac24b72ccb8c93a18a3e83f292
+      size: 125
+    - path: src/common.py
+      hash: md5
+      md5: 5f802bacd0cec45cd76c77761bf116c5
+      size: 1899
+    - path: src/train.py
+      hash: md5
+      md5: 1a90ef1f5ac20951140da292135eb15a
+      size: 2149
+    params:
+      params.yaml:
+        features:
+          numeric:
+          - floor
+          - is_apartment
+          - kitchen_area
+          - living_area
+          - rooms
+          - total_area
+          - build_year
+          - latitude
+          - longitude
+          - ceiling_height
+          - flats_count
+          - floors_total
+          - has_elevator
+          categorical:
+          - building_type_int
+        model:
+          loss: absolute_error
+          learning_rate: 0.1
+          max_iter: 200
+          max_leaf_nodes: 31
+          min_samples_leaf: 20
+          l2_regularization: 1.0
+          early_stopping: false
+          random_state: 42
+          n_threads: 2
+    outs:
+    - path: models/dummy_model.joblib
+      hash: md5
+      md5: 809a5acae368784dd50aea27bd43581b
+      size: 635
+    - path: models/price_model.joblib
+      hash: md5
+      md5: df5f7dba817ab085a0d792d34cbf8de3
+      size: 316562
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: 3de20cd5d19cce4de2fac9941a75bc8d
+      size: 3728071
+    - path: models/dummy_model.joblib
+      hash: md5
+      md5: 809a5acae368784dd50aea27bd43581b
+      size: 635
+    - path: models/price_model.joblib
+      hash: md5
+      md5: df5f7dba817ab085a0d792d34cbf8de3
+      size: 316562
+    - path: requirements-ml.lock.txt
+      hash: md5
+      md5: 2efe042763aeb0312a6e5b5ec173db7d
+      size: 2005
+    - path: src/__init__.py
+      hash: md5
+      md5: 4fc40cac24b72ccb8c93a18a3e83f292
+      size: 125
+    - path: src/common.py
+      hash: md5
+      md5: 5f802bacd0cec45cd76c77761bf116c5
+      size: 1899
+    - path: src/evaluate.py
+      hash: md5
+      md5: 3f725bcde22cc29c808e76eb953d83c0
+      size: 1336
+    params:
+      params.yaml:
+        features:
+          numeric:
+          - floor
+          - is_apartment
+          - kitchen_area
+          - living_area
+          - rooms
+          - total_area
+          - build_year
+          - latitude
+          - longitude
+          - ceiling_height
+          - flats_count
+          - floors_total
+          - has_elevator
+          categorical:
+          - building_type_int
+        model.n_threads: 2
+    outs:
+    - path: reports/metrics.json
+      hash: md5
+      md5: 9eb5cf94b7118401970d7d08991eca94
+      size: 313

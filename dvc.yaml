@@ -1,0 +1,61 @@
+stages:
+  extract:
+    cmd: python -m src.extract
+    deps:
+      - src/__init__.py
+      - src/common.py
+      - src/extract.py
+      - requirements-ml.lock.txt
+    params:
+      - data
+    outs:
+      - data/raw/flats_clean.csv
+
+  split:
+    cmd: python -m src.split_data
+    deps:
+      - src/__init__.py
+      - src/common.py
+      - src/split_data.py
+      - data/raw/flats_clean.csv
+      - requirements-ml.lock.txt
+    params:
+      - split
+      - features
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - reports/split.json:
+          cache: false
+
+  train:
+    cmd: python -m src.train
+    deps:
+      - src/__init__.py
+      - src/common.py
+      - src/train.py
+      - data/processed/train.csv
+      - requirements-ml.lock.txt
+    params:
+      - features
+      - model
+    outs:
+      - models/price_model.joblib
+      - models/dummy_model.joblib
+
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+      - src/__init__.py
+      - src/common.py
+      - src/evaluate.py
+      - data/processed/test.csv
+      - models/price_model.joblib
+      - models/dummy_model.joblib
+      - requirements-ml.lock.txt
+    params:
+      - features
+      - model.n_threads
+    metrics:
+      - reports/metrics.json:
+          cache: false
